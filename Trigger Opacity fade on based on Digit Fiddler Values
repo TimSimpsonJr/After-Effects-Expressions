@@ -1,11 +1,11 @@
 //This expression triggers opacity changes based on a Digit Fiddler animation with two keyframes.
 
 //Define Constants
-const fadeDuration = thisComp.layer("Comp Control").effect("Fade Duration")("Slider");
+const fadeDuration = 0.5;
 const triggerParameter = thisComp.layer("Your Layer Here").effect("Digit Fiddler")("Number");
+const triggerValue = effect("Number")("Slider");
 
 // Retrieve keyframes and calculate trigger times.
-const triggerValue = effect("Date Control")("Slider");
 const firstKey = triggerParameter.key(1);
 const secondKey = triggerParameter.key(2);
 const triggerTime = (secondKey.time-firstKey.time)*((triggerValue-firstKey.value)/(secondKey.value-firstKey.value))+firstKey.time;
