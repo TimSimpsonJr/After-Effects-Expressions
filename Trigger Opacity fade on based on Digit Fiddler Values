@@ -3,6 +3,8 @@
 //Define Constants
 const fadeDuration = 0.5;
 const triggerParameter = thisComp.layer("Your Layer Here").effect("Digit Fiddler")("Number");
+
+//Trigger values are slider controls on the same layer as the expresssion. This allows you to apply this expression to multiple layers and change the trigger times independently.
 const triggerValue = effect("Number")("Slider");
 
 // Retrieve keyframes and calculate trigger times.
