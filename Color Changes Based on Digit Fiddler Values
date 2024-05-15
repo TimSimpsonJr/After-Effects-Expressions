@@ -1,26 +1,28 @@
-//This triggers color changes based on a Digit Fiddler animation with two keyframes.
+//This expression triggers color changes based on a Digit Fiddler animation with two keyframes.
 
 // Define constants
 const fadeDuration = 0.5;
-const triggerParameter = thisComp.layer("1949").effect("Digit Fiddler")("Number");
-const triggerValue = effect("Soviet Date")("Slider");
-const triggerValue2 = effect("Nato Date")("Slider");
-const triggerValue3 = effect("Invasion Date")("Slider");
+const triggerParameter = thisComp.layer("Your Layer Here").effect("Digit Fiddler")("Number");
 
-// Retrieve keyframes and calculate trigger times
+//Trigger values are slider controls on the same layer. This allows you to apply this expression to multiple layers and change the trigger times independently.
+const triggerValue = effect("Date 1")("Slider");
+const triggerValue2 = effect("Date 2")("Slider");
+const triggerValue3 = effect("Date 3")("Slider");
+
+// Retrieve keyframes and calculate trigger times. To add additional color changes, just add additional "triggerValueX" parameters with their respective sliders.
 const firstKey = triggerParameter.key(1);
 const secondKey = triggerParameter.key(2);
 const triggerTime = (secondKey.time - firstKey.time) * ((triggerValue - firstKey.value) / (secondKey.value - firstKey.value)) + firstKey.time;
 const triggerTime2 = (secondKey.time - firstKey.time) * ((triggerValue2 - firstKey.value) / (secondKey.value - firstKey.value)) + firstKey.time;
 const triggerTime3 = (secondKey.time - firstKey.time) * ((triggerValue3 - firstKey.value) / (secondKey.value - firstKey.value)) + firstKey.time;
 
-// Retrieve colors from Comp Control layer effects
-const colorStart = thisComp.layer("Comp Control").effect("Russia/Belarus")("Color");
-const colorTwo = thisComp.layer("Comp Control").effect("Former Soviet States")("Color");
-const colorThree = thisComp.layer("Comp Control").effect("Nato Color Control")("Color");
-const colorFour = thisComp.layer("Comp Control").effect("Imperiled Color")("Color");
+// Retrieve colors from Comp Control layer color controls. Pickwhip your own colors here.
+const colorStart = thisComp.layer("Comp Control").effect("Color 1")("Color");
+const colorTwo = thisComp.layer("Comp Control").effect("Color 2")("Color");
+const colorThree = thisComp.layer("Comp Control").effect("Color 3")("Color");
+const colorFour = thisComp.layer("Comp Control").effect("Color 4")("Color");
 
-// Apply color transitions based on trigger times
+// Apply color transitions based on trigger times. For more/fewer color changes, just add/remove nested if statements.
 if (time >= triggerTime3) {
     linear(time, triggerTime3, triggerTime3 + fadeDuration, colorThree, colorFour);
 } else {
