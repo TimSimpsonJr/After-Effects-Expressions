@@ -22,7 +22,7 @@ const colorTwo = thisComp.layer("Comp Control").effect("Color 2")("Color");
 const colorThree = thisComp.layer("Comp Control").effect("Color 3")("Color");
 const colorFour = thisComp.layer("Comp Control").effect("Color 4")("Color");
 
-// Apply color transitions based on trigger times. For more/fewer color changes, just add/remove nested if statements.
+// Apply color transitions based on trigger times. For more/fewer color changes, just add/remove nested if statements. The first trigger should be the most nested if statement.
 if (time >= triggerTime3) {
     linear(time, triggerTime3, triggerTime3 + fadeDuration, colorThree, colorFour);
 } else {
