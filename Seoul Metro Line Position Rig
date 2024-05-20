@@ -1,0 +1,32 @@
+// IMPORTANT!!! For this to work properly, the comp with your elements and the comp with your paths need to be the EXACT SAME SIZE, or they need to at least be in the same position space.
+
+// Define the composition based on the name of a text layer at the top of the comp (this should reference the comp with the paths you want it to follow)
+var theComp = comp(thisComp.layer(1).name);
+
+// Retrieve the value of the "Metro Line" property from Essential Properties that is driven by a dropdown menu in the precomp. 
+// IMPORTANT!!! It's IMPERATIVE that this dropdown matches the order of your CSV rows and the names of your line layers. DOUBLE CHECK YOUR SPELLING!!!!
+var metroLine = essentialProperty("Metro Line").value;
+
+// Load CSV data from a layer named "Seoul Metro Comp Info - Comp Info.csv"
+// The dataValue method extracts the first row of the CSV file, excluding the header, using the index provided by metroLine
+var csvData = theComp.layer("Seoul Metro Comp Info - Comp Info.csv").footage("Seoul Metro Comp Info - Comp Info.csv").dataValue([0, metroLine-1]);
+
+// Determine which end of the line the object starts at based on a "Reverse Path" checkbox control
+var reversePath = effect("Reverse Path Percentage")("Checkbox") * 1000;
+
+// Get the selected path number from the "Path" effect menu
+var pathNumber = effect("Path")("Menu");
+
+// This allows you to control for an edge case where the Percentage Path Slider goes negative when the "Reverse Path" checkbox is enabled
+if (effect("InvertMultiplier")("Checkbox") == 1){
+	var invertMultiplier = -1;
+} else {
+	var invertMultiplier = 1
+}
+
+// Reference the name of the shape layer and the specific path within that layer
+shapeLayer = theComp.layer(csvData);
+line = shapeLayer.content("Shape 1").content(pathNumber).path;
+
+// Calculate the position of the layer using pointOnPath
+line.pointOnPath((reversePath*invertMultiplier - effect("Point Percentage")("Slider"))/(-1000*invertMultiplier)) + effect("Offset")("Point") + shapeLayer.position
