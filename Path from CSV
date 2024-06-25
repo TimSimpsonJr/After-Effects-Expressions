@@ -3,7 +3,7 @@ var spreadsheet = footage("Korea Rainfall Averages - Korea Rainfall Averages.csv
 var columnSelect = effect("Column Selection")("Slider") - 1; //Select column in CSV  
 
 // Retrieve control values from the 'Chart Control' layer effects
-var divisor = effect("Spreadsheet Value divisor")("Slider"); // Divisor for normalizing CSV data
+var divisor = effect("Spreadsheet Value divisor")("Slider"); // Divisor for normalizing CSV data (Use if your data is really large or really small)
 var rowStart = effect("Row Start")("Slider"); // Start index for data rows
 var rowEnd = effect("Row End")("Slider"); // End index for data rows
 var minYValue = effect("Min Y Value")("Slider"); // Minimum Y value for data scaling
