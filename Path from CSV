@@ -1,0 +1,63 @@
+//Link CSV here
+var spreadsheet = footage("Korea Rainfall Averages - Korea Rainfall Averages.csv");
+var columnSelect = effect("Column Selection")("Slider") - 1; //Select column in CSV  
+
+// Retrieve control values from the 'Chart Control' layer effects
+var divisor = effect("Spreadsheet Value divisor")("Slider"); // Divisor for normalizing CSV data
+var rowStart = effect("Row Start")("Slider"); // Start index for data rows
+var rowEnd = effect("Row End")("Slider"); // End index for data rows
+var minYValue = effect("Min Y Value")("Slider"); // Minimum Y value for data scaling
+var maxYValue = effect("Max Y value")("Slider"); // Maximum Y value for data scaling
+
+// Retrieve sliders for curve scaling
+var xScaleFactor = effect("X Curve Scaling")("Slider"); // Scaling factor for tangents along x-axis
+var yScaleFactor = effect("Y Curve Scaling")("Slider"); // Scaling factor for tangents along y-axis
+
+// Initialize variables for path creation
+var startingPointX = 0; // Starting x-coordinate for path
+var numberOfPoints = rowEnd - rowStart; // Total number of points in path
+var spacingForPoints = thisComp.width / (numberOfPoints - 1); // Horizontal spacing between points
+var arrayOfPoints = []; // Array to hold path points
+var inTangents = []; // Array to hold 'in' tangents for each point
+var outTangents = []; // Array to hold 'out' tangents for each point
+
+// Function to calculate tangent vectors based on scaling factors
+function calculateTangent(point1, point2) {
+    return [(point2[0] - point1[0]) * xScaleFactor / 3, (point2[1] - point1[1]) * yScaleFactor / 3];
+}
+
+// Generate path points and tangents
+for (var i = 0; i < numberOfPoints; i++) {
+    var csvData = spreadsheet.dataValue([columnSelect, i]) / divisor;
+    var lineHeight = linear(csvData, minYValue, maxYValue, 0, thisComp.height) * -1; // Map data to comp height
+    var dataArray = [startingPointX, lineHeight]; // Current point coordinates
+
+    arrayOfPoints.push(dataArray); // Add point to path
+
+    // Calculate tangents if not first or last point
+    if (i > 0 && i < numberOfPoints - 1) {
+        var prevPoint = arrayOfPoints[i - 1];
+        var nextPoint = [startingPointX + spacingForPoints, linear(spreadsheet.dataValue([columnSelect, i + 1]) / divisor, minYValue, maxYValue, 0, thisComp.height) * -1];
+
+        var outTangent = calculateTangent(prevPoint, dataArray);
+        var inTangent = calculateTangent(nextPoint, dataArray);
+
+        outTangents.push(outTangent);
+        inTangents.push(inTangent);
+    } else {
+        // Set tangents to zero for the first and last points
+        outTangents.push([0, 0]);
+        inTangents.push([0, 0]);
+    }
+
+    startingPointX += spacingForPoints; // Move to next x position
+}
+
+// Ensure the first and last points have zero tangents to avoid path distortion
+inTangents[0] = [0, 0];
+outTangents[0] = [0, 0];
+inTangents[inTangents.length - 1] = [0, 0];
+outTangents[outTangents.length - 1] = [0, 0];
+
+// Create the path with the calculated points and tangents
+createPath(arrayOfPoints, inTangents, outTangents, false);
