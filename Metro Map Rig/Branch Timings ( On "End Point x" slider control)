@@ -1,3 +1,5 @@
+//Keyframe animation needs to be applied with keyframes at the beginning of your layer for this expression to work
+
 // Retrieve slider values. If you have sub branches, the primary line refers to the line that your branch is branching off from.
 var midPoint = effect("MidPoint 1")("Slider");  // Midpoint value for primary line
 var slds = effect("StartPoint 1")("Slider");    // Start point value for primary line
