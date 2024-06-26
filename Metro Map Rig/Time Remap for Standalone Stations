@@ -1,0 +1,56 @@
+// Get the composition of the first layer in the current composition
+var theComp = comp(thisComp.layer(1).name);
+
+// Get the value of the "Metro Line" essential property
+var metroLine = essentialProperty("Metro Line");
+
+// Retrieve CSV data based on the metroLine value
+var csvData = footage("Seoul Metro Comp Info - Comp Info - Copy.csv").dataValue([0, metroLine - 1]);
+
+// Get the path number from the "Path" effect menu
+var pathNumber = effect("Path")("Menu");
+
+// Retrieve the MidPoint slider value from the specified layer in csvData
+var midPoint = theComp.layer(csvData).effect("MidPoint " + pathNumber)("Slider");
+
+// Normalize the position percentage slider value (0-1000) to the range 0-100
+var pos = effect("Point Percentage")("Slider") * 0.1;
+
+// Retrieve the StartPoint and EndPoint slider values from the specified layer in csvData
+var slds = theComp.layer(csvData).effect("StartPoint " + pathNumber)("Slider");
+var slde = theComp.layer(csvData).effect("EndPoint " + pathNumber)("Slider");
+
+// Determine if the position is to the left of the midpoint
+var isLeft = pos < midPoint;
+
+// Select the appropriate parameter based on whether the position is left of the midpoint
+var triggerParameter = isLeft ? slds : slde;
+
+// Calculate triggerValue based on position
+var triggerValue;
+if (isLeft) {
+    // If position is less than midpoint, map position inversely to the start point range
+    triggerValue = linear(pos, 0, midPoint, 100, 0); // Inverse mapping to slds
+} else {
+    // If position is greater than or equal to midpoint, map position to the end point range
+    triggerValue = linear(pos, midPoint, 100, 0, 100); // Mapping to slde
+}
+
+// Retrieve the first and second keyframes of the triggerParameter
+var firstKey = triggerParameter.key(1);
+var secondKey = triggerParameter.key(2);
+
+// Calculate triggerTime based on the triggerValue and keyframe values
+var triggerTime = (secondKey.time - firstKey.time) * ((triggerValue - firstKey.value) / (secondKey.value - firstKey.value)) + firstKey.time;
+
+// Determine if the current time is greater than or equal to triggerTime
+var isTriggerTime = time >= triggerTime;
+
+// Adjust the time remap based on whether the current time is greater than or equal to triggerTime
+if (isTriggerTime) {
+    // If current time is greater than or equal to triggerTime, adjust the time remap
+    thisProperty.valueAtTime(time - triggerTime);
+} else {
+    // Otherwise, set the time remap to 0
+    0;
+}
