@@ -1,0 +1,64 @@
+// Initial triggerTime calculation based on the first set of keyframes
+
+// Retrieve slider values for the first set of keyframes
+var midPoint1 = effect("MidPoint 1")("Slider");
+var slds1 = effect("StartPoint 1")("Slider");
+var slde1 = effect("EndPoint 1")("Slider");
+var pos1 = effect("Branch (%) 1")("Slider");
+
+// Determine if the position is to the left of the midpoint for the first set
+var isLeft1 = pos1 < midPoint1;
+
+// Select the appropriate parameter based on whether the position is left of the midpoint
+var triggerParameter1 = isLeft1 ? slds1 : slde1;
+
+// Calculate triggerValue for the first set
+var triggerValue1;
+if (isLeft1) {
+    // If pos1 is less than midPoint1, calculate its position on slds1
+    triggerValue1 = linear(pos1, 0, midPoint1, 100, 0); // Inverse mapping to slds1
+} else {
+    // If pos1 is greater than or equal to midPoint1, calculate its position on slde1
+    triggerValue1 = linear(pos1, midPoint1, 100, 0, 100); // Mapping to slde1
+}
+
+// Retrieve the first and second keyframes of the triggerParameter1
+var firstKey1 = triggerParameter1.key(1);
+var secondKey1 = triggerParameter1.key(2);
+
+// Calculate triggerTime1 based on the triggerValue1 and keyframe values
+var triggerTime1 = (secondKey1.time - firstKey1.time) * ((triggerValue1 - firstKey1.value) / (secondKey1.value - firstKey1.value)) + firstKey1.time;
+
+// Calculate the delay for pos2 based on the second set of keyframes
+
+// Retrieve slider values for the second set of keyframes. Change these to whichever branch its branching from.
+var midPoint2 = effect("MidPoint 2")("Slider");
+var slds2 = effect("StartPoint 2")("Slider");
+var slde2 = effect("EndPoint 2")("Slider");
+var pos2 = effect("Branch (%) 2")("Slider");
+
+// Determine if the position is to the left of the midpoint for the second set
+var isLeft2 = pos2 < midPoint2;
+
+// Select the appropriate parameter based on whether the position is left of the midpoint
+var triggerParameter2 = isLeft2 ? slds2 : slde2;
+
+// The keyframe values for the second set are known: firstKey2.value = 0, secondKey2.value = 100
+var firstKey2 = triggerParameter2.key(1);
+var secondKey2 = triggerParameter2.key(2);
+
+// Calculate the time interval between the second set of keyframes
+var timeInterval2 = secondKey2.time - firstKey2.time;
+
+// Calculate the delay time based on pos2
+var delayTime = (timeInterval2 * pos2) / 100; // Since firstKey2.value = 0 and secondKey2.value = 100
+
+// Final triggerTime including the delay from the second set of keyframes
+var finalTriggerTime = triggerTime1 + delayTime;
+
+// Adjust the time remap based on whether the current time is greater than or equal to finalTriggerTime
+if (time >= finalTriggerTime) {
+    thisProperty.valueAtTime(time - finalTriggerTime);
+} else {
+    0;
+}
