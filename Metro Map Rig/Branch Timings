@@ -1,0 +1,37 @@
+// Retrieve slider values. If you have sub branches, the primary line refers to the line that your branch is branching off from.
+var midPoint = effect("MidPoint 1")("Slider");  // Midpoint value for primary line
+var slds = effect("StartPoint 1")("Slider");    // Start point value for primary line
+var slde = effect("EndPoint 1")("Slider");      // End point value for primary line
+var pos = effect("Branch (%) 1")("Slider");     // Position percentage value for branch
+
+// Determine if the position is to the left of the midpoint
+var isLeft = pos < midPoint;
+
+// Select the appropriate parameter based on whether the position is left of the midpoint
+var triggerParameter = isLeft ? slds : slde;
+
+// Calculate triggerValue based on position
+var triggerValue;
+if (isLeft) {
+    // If position is less than midpoint, map position inversely to the start point range
+    triggerValue = linear(pos, 0, midPoint, 100, 0);  // Inverse mapping to slds
+} else {
+    // If position is greater than or equal to midpoint, map position to the end point range
+    triggerValue = linear(pos, midPoint, 100, 0, 100);  // Mapping to slde
+}
+
+// Retrieve the first and second keyframes of the triggerParameter
+var firstKey = triggerParameter.key(1);
+var secondKey = triggerParameter.key(2);
+
+// Calculate triggerTime based on the triggerValue and keyframe values
+var triggerTime = (secondKey.time - firstKey.time) * ((triggerValue - firstKey.value) / (secondKey.value - firstKey.value)) + firstKey.time;
+
+// Adjust the time remap based on whether the current time is greater than or equal to triggerTime
+if (time >= triggerTime) {
+    // If current time is greater than or equal to triggerTime, adjust the time remap
+    thisProperty.valueAtTime(time - triggerTime);
+} else {
+    // Otherwise, set the time remap to 0
+    0;
+}
